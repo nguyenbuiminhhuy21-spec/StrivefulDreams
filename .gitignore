@@ -1,0 +1,17 @@
+bin/
+obj/
+*.user
+*.suo
+*.tmp
+*.log
+Content/bin/
+Content/obj/
+.rider/
+.vscode/
+.vs/
+*.swp
+*.swo
+Thumbs.db
+.DS_Store
+*.xnb
+!Content/**/*.xnb
