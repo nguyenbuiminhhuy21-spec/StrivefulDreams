@@ -8,16 +8,24 @@ namespace Code_Game.Scripts.UI;
 public class TextInput
 {
     private readonly SpriteFont _font;
-    private readonly Vector2 _position;
-    private readonly int _width;
-    private readonly Color _backgroundColor;
-    private readonly Color _borderColor;
+    private Vector2 _position;
+    private int _width;
+    private int _height;
     private readonly Color _textColor;
     private readonly string _label;
+    private readonly Texture2D _backgroundTexture;
+    private int _labelOffsetY = -35;
+    private float _fontScale = 1.0f;
 
     private string _text;
     private bool _isFocused;
     private KeyboardState _previousKeyboardState;
+
+    // Key Repeat logic
+    private double _backspaceTimer;
+    private const double InitialRepeatDelay = 500; // ms
+    private const double RepeatInterval = 50; // ms
+    private bool _isInitialDelayPassed;
 
     public string Text
     {
@@ -27,54 +35,96 @@ public class TextInput
 
     public Rectangle Bounds { get; private set; }
     public bool IsFocused => _isFocused;
+    public int LabelOffsetY { get => _labelOffsetY; set => _labelOffsetY = value; }
+    public float FontScale { get => _fontScale; set => _fontScale = value; }
 
-    public TextInput(SpriteFont font, string label, Vector2 position, int width = 260, string initialText = "")
+    public TextInput(SpriteFont font, string label, Vector2 position, int width, int height, Texture2D backgroundTexture = null, string placeholder = "", string initialText = "")
     {
         _font = font;
         _label = label;
         _position = position;
         _width = width;
+        _height = height;
         _text = initialText;
-        _backgroundColor = new Color(245, 245, 245);
-        _borderColor = Color.Black;
+        _backgroundTexture = backgroundTexture;
         _textColor = Color.Black;
-        var textSize = _font.MeasureString(_label);
-        Bounds = new Rectangle((int)_position.X, (int)_position.Y + (int)textSize.Y + 8, _width, (int)_font.MeasureString("A").Y + 12);
+
+        UpdateBounds();
+    }
+
+    public void UpdateLayout(Vector2 position, int width, int height)
+    {
+        _position = position;
+        _width = width;
+        _height = height;
+        UpdateBounds();
+    }
+
+    private void UpdateBounds()
+    {
+        Bounds = new Rectangle((int)_position.X, (int)_position.Y, _width, _height);
     }
 
     public void Update(GameTime gameTime)
     {
+        var ms = Mouse.GetState();
+        Update(gameTime, new Point(ms.X, ms.Y));
+    }
+
+    public void Update(GameTime gameTime, Point mousePoint)
+    {
         var mouseState = Mouse.GetState();
-        var mousePoint = new Point(mouseState.X, mouseState.Y);
-        if (mouseState.LeftButton == ButtonState.Pressed && Bounds.Contains(mousePoint))
+        if (mouseState.LeftButton == ButtonState.Pressed)
         {
-            _isFocused = true;
-        }
-        else if (mouseState.LeftButton == ButtonState.Pressed && !Bounds.Contains(mousePoint))
-        {
-            _isFocused = false;
+            _isFocused = Bounds.Contains(mousePoint);
         }
 
         var keyboardState = Keyboard.GetState();
         if (_isFocused)
         {
+            // Special handling for Backspace repeat
+            if (keyboardState.IsKeyDown(Keys.Back))
+            {
+                if (_previousKeyboardState.IsKeyUp(Keys.Back))
+                {
+                    DeleteLastChar();
+                    _backspaceTimer = gameTime.TotalGameTime.TotalMilliseconds;
+                    _isInitialDelayPassed = false;
+                }
+                else
+                {
+                    double elapsed = gameTime.TotalGameTime.TotalMilliseconds - _backspaceTimer;
+                    if (!_isInitialDelayPassed)
+                    {
+                        if (elapsed >= InitialRepeatDelay)
+                        {
+                            DeleteLastChar();
+                            _backspaceTimer = gameTime.TotalGameTime.TotalMilliseconds;
+                            _isInitialDelayPassed = true;
+                        }
+                    }
+                    else
+                    {
+                        if (elapsed >= RepeatInterval)
+                        {
+                            DeleteLastChar();
+                            _backspaceTimer = gameTime.TotalGameTime.TotalMilliseconds;
+                        }
+                    }
+                }
+            }
+
             foreach (Keys key in keyboardState.GetPressedKeys())
             {
                 if (_previousKeyboardState.IsKeyUp(key))
                 {
-                    if (key == Keys.Back && _text.Length > 0)
-                    {
-                        _text = _text.Substring(0, _text.Length - 1);
-                    }
-                    else if (key == Keys.Space)
-                    {
-                        _text += " ";
-                    }
+                    if (key == Keys.Back) { /* Handled above */ }
+                    else if (key == Keys.Space) _text += " ";
+                    else if (key == Keys.Enter) _isFocused = false;
                     else
                     {
                         var character = MapKeyToChar(key, keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift));
-                        if (!string.IsNullOrEmpty(character))
-                            _text += character;
+                        if (!string.IsNullOrEmpty(character)) _text += character;
                     }
                 }
             }
@@ -83,24 +133,62 @@ public class TextInput
         _previousKeyboardState = keyboardState;
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    private void DeleteLastChar()
     {
-        spriteBatch.Draw(CreateWhitePixel(spriteBatch.GraphicsDevice), Bounds, _backgroundColor);
-        spriteBatch.DrawRectangle(Bounds, _borderColor, 2);
-
-        var labelSize = _font.MeasureString(_label);
-        spriteBatch.DrawString(_font, _label, new Vector2(_position.X, _position.Y), Color.White);
-
-        var textToRender = string.IsNullOrEmpty(_text) ? "..." : _text;
-        var textPosition = new Vector2(Bounds.X + 8, Bounds.Y + 6);
-        spriteBatch.DrawString(_font, textToRender, textPosition, _textColor);
+        if (_text.Length > 0)
+        {
+            _text = _text.Substring(0, _text.Length - 1);
+        }
     }
 
-    private Texture2D CreateWhitePixel(GraphicsDevice graphicsDevice)
+    public void Draw(SpriteBatch spriteBatch, Matrix? transformMatrix = null)
     {
-        var texture = new Texture2D(graphicsDevice, 1, 1);
-        texture.SetData(new[] { Color.White });
-        return texture;
+        if (_backgroundTexture != null)
+        {
+            spriteBatch.Draw(_backgroundTexture, Bounds, Color.White);
+        }
+        else
+        {
+            var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            pixel.SetData(new[] { Color.White });
+            spriteBatch.Draw(pixel, Bounds, Color.DarkGray);
+        }
+
+        if (!string.IsNullOrEmpty(_label))
+        {
+            UIUtils.DrawStringWithManualSpaces(spriteBatch, _font, _label, new Vector2(_position.X, _position.Y + _labelOffsetY), Color.Black, _fontScale);
+        }
+
+        // Setup Clipping (ScissorRectangle)
+        var oldScissor = spriteBatch.GraphicsDevice.ScissorRectangle;
+        var oldRasterizer = spriteBatch.GraphicsDevice.RasterizerState;
+        Rectangle clipRect = new Rectangle(Bounds.X + 10, Bounds.Y, Bounds.Width - 20, Bounds.Height);
+        
+        spriteBatch.End();
+        RasterizerState rs = new RasterizerState { ScissorTestEnable = true };
+        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, rs, null, transformMatrix);
+        spriteBatch.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(oldScissor, clipRect);
+
+        string textToRender = _text;
+        bool showCursor = _isFocused && (DateTime.Now.Millisecond / 500) % 2 == 0;
+        
+        float totalTextWidth = UIUtils.CalculateTextWidth(_font, _text, _fontScale);
+        float maxVisibleWidth = clipRect.Width - 10;
+        float scrollOffset = Math.Max(0, totalTextWidth - maxVisibleWidth);
+        
+        Vector2 startPos = new Vector2(clipRect.X - scrollOffset, Bounds.Y + (Bounds.Height - _font.MeasureString("A").Y * _fontScale) / 2);
+        
+        UIUtils.DrawStringWithManualSpaces(spriteBatch, _font, textToRender, startPos, _textColor, _fontScale);
+        
+        if (showCursor)
+        {
+            Vector2 cursorPos = new Vector2(startPos.X + totalTextWidth, startPos.Y);
+            spriteBatch.DrawString(_font, "|", cursorPos, _textColor, 0f, Vector2.Zero, _fontScale, SpriteEffects.None, 0f);
+        }
+
+        spriteBatch.End();
+        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, oldRasterizer, null, transformMatrix);
+        spriteBatch.GraphicsDevice.ScissorRectangle = oldScissor;
     }
 
     private static string MapKeyToChar(Keys key, bool shift)
@@ -110,38 +198,13 @@ public class TextInput
             var letter = (char)('a' + (key - Keys.A));
             return shift ? letter.ToString().ToUpperInvariant() : letter.ToString();
         }
-
         if (key >= Keys.D0 && key <= Keys.D9)
         {
             var number = (char)('0' + (key - Keys.D0));
             return number.ToString();
         }
-
         if (key == Keys.OemPeriod) return ".";
         if (key == Keys.OemMinus) return "-";
-        if (key == Keys.OemComma) return ",";
-        if (key == Keys.OemQuestion) return "?";
-        if (key == Keys.OemSemicolon) return ";";
-        if (key == Keys.OemQuotes) return "'";
-        if (key == Keys.OemOpenBrackets) return "[";
-        if (key == Keys.OemCloseBrackets) return "]";
-        if (key == Keys.OemPlus) return shift ? "+" : "=";
-        if (key == Keys.OemPipe) return "|";
-        if (key == Keys.OemTilde) return shift ? "~" : "`";
-
         return null;
-    }
-}
-
-public static class SpriteBatchExtensions
-{
-    public static void DrawRectangle(this SpriteBatch spriteBatch, Rectangle rectangle, Color color, int thickness)
-    {
-        var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-        pixel.SetData(new[] { color });
-        spriteBatch.Draw(pixel, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, thickness), color);
-        spriteBatch.Draw(pixel, new Rectangle(rectangle.X, rectangle.Y, thickness, rectangle.Height), color);
-        spriteBatch.Draw(pixel, new Rectangle(rectangle.X + rectangle.Width - thickness, rectangle.Y, thickness, rectangle.Height), color);
-        spriteBatch.Draw(pixel, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - thickness, rectangle.Width, thickness), color);
     }
 }

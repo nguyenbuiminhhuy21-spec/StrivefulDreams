@@ -1,84 +1,44 @@
-using System;
-using System.Threading.Tasks;
-using Code_Game.Domain;
+using Microsoft.Xna.Framework;
 using Code_Game.Scripts.Contracts.CharacterCreation;
-using Code_Game.Scripts.Contracts.Upload;
-using Code_Game.Scripts.Repositories.Storage;
-using Code_Game.Scripts.Services.Upload;
 
 namespace Code_Game.Scripts.Services.CharacterCreation;
 
 public class CharacterCreationService : ICharacterCreationService
 {
-    private readonly IPlayerProfileRepository _repository;
-    private readonly IPlayerProfileUploadService _uploadService;
-    private readonly string[] _animalOptions = { "Cow", "Chicken", "Cat", "Dog" };
-    private int _selectedAnimalIndex;
+    private static CharacterCreationService _instance;
+    public static CharacterCreationService Instance => _instance ??= new CharacterCreationService();
 
     public string Name { get; set; } = string.Empty;
     public string FarmName { get; set; } = string.Empty;
     public string FavoriteThing { get; set; } = string.Empty;
-    public string SelectedAnimal => _animalOptions[_selectedAnimalIndex];
+    public string Gender { get; set; } = "Male";
+    public string SelectedAnimal => "Dog"; // Placeholder
 
-    public CharacterCreationService(IPlayerProfileRepository repository, IPlayerProfileUploadService uploadService)
-    {
-        _repository = repository;
-        _uploadService = uploadService;
-    }
+    public int BirthdaySeason { get; set; } = 0;
+    public int BirthdayDay { get; set; } = 1;
 
-    public CharacterCreationService()
-        : this(new PlayerProfileRepository(), new PlayerProfileUploadService())
-    {
-    }
+    // Appearance Indices
+    public int HairIndex { get; set; } = 0;
+    public int ShirtIndex { get; set; } = 0;
+    public int PantsIndex { get; set; } = 0;
 
-    public void SelectPreviousAnimal()
-    {
-        _selectedAnimalIndex = (_selectedAnimalIndex + _animalOptions.Length - 1) % _animalOptions.Length;
-    }
+    // Max counts
+    public int MaxHairStyles { get; set; } = 10;
+    public int MaxShirtStyles { get; set; } = 10;
+    public int MaxPantsStyles { get; set; } = 10;
 
-    public void SelectNextAnimal()
-    {
-        _selectedAnimalIndex = (_selectedAnimalIndex + 1) % _animalOptions.Length;
-    }
+    // Colors
+    public Color HairColor { get; set; } = Color.White;
+    public Color ShirtColor { get; set; } = Color.White;
+    public Color PantsColor { get; set; } = Color.White;
+
+    public void SelectPreviousAnimal() { }
+    public void SelectNextAnimal() { }
 
     public string Confirm()
     {
-        var profile = new PlayerProfile
-        {
-            Name = Name,
-            FarmName = FarmName,
-            FavoriteThing = FavoriteThing,
-            AnimalPreference = SelectedAnimal
-        };
-
-        try
-        {
-            _repository.Save(profile);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Failed to save profile locally: {ex.Message}");
-            return "Failed to save profile. Please try again.";
-        }
-
-        try
-        {
-            var uploadSuccess = Task.Run(() => _uploadService.UploadProfileAsync(profile)).Result;
-            if (uploadSuccess)
-            {
-                return "Profile saved locally and uploaded successfully.";
-            }
-        }
-        catch
-        {
-            // Upload failed, but local save succeeded
-        }
-
-        return "Profile saved locally.";
+        return $"Character Created: {Name} of {FarmName} [{Gender}] (Hair:{HairIndex}, Shirt:{ShirtIndex}, Pants:{PantsIndex})";
     }
 
-    public void Cancel()
-    {
-        // Nothing stored, just discard entered values.
-    }
+    public void Cancel() { }
 }

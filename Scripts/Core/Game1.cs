@@ -7,6 +7,8 @@ using CodeGame.Scripts.Services.Multiplayer;
 using Code_Game.Scripts.Services.Localization;
 using System;
 using System.IO;
+using System.Linq;
+using Code_Game.Scripts.Constants;
 
 namespace Code_Game;
 
@@ -127,12 +129,6 @@ public class Game1 : Game
             ScreenManager.RequestReload();
         }
 
-        // Language Switch: Press L to switch language
-        if (currentKeyState.IsKeyDown(Keys.L) && _lastKeyboardState.IsKeyUp(Keys.L))
-        {
-            LocalizationService.Instance.SwitchLanguage();
-            ScreenManager.RequestReload();
-        }
         _lastKeyboardState = currentKeyState;
 
         if (_reloadPending || ScreenManager.ReloadRequested)

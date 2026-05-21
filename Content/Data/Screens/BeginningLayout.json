@@ -1,0 +1,17 @@
+{
+  "SettingsButton": {
+    "X": 0.93,
+    "Y": 0.05,
+    "Scale": 1.5
+  },
+  "MainMenu": {
+    "Y": 0.85,
+    "Scale": 2.3,
+    "Gap": 36
+  },
+  "TitleImage": {
+    "X": 0.5,
+    "Y": 0.04 ,
+    "Scale": 1.6
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "Frame": {
+    "Scale": 3
+  },
+  "Divider": {
+    "OffsetX": 0,
+    "OffsetY": 20
+  },
+  "TabGap": 1,
+  "TabInset": 1,
+  "Tabs": [
+    { "Name": "general",  "OffsetY": 7 },
+    { "Name": "audio",    "OffsetY": 7 },
+    { "Name": "controls", "OffsetY": 7 }
+  ],
+  "LanguageInput": {
+    "OffsetX": 8,
+    "OffsetY": 8
+  },
+  "LanguageSelect": {
+    "OffsetX": -2,
+    "OffsetY": 2
+  },
+  "LanguageDot": {
+    "OffsetX": 4,
+    "OffsetY": 4
+  }
+}

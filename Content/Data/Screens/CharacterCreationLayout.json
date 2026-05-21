@@ -1,0 +1,243 @@
+{
+  "Panel": {
+    "X": 0.1,
+    "Y": 0.1,
+    "Width": 0.8,
+    "Height": 0.8
+  },
+  "Frame": {
+    "RelativeTo": "Panel",
+    "X": 0.32,
+    "Y": 0.35,
+    "Scale": 0.66,
+    "OriginX": 0.5,
+    "OriginY": 0.5
+  },
+  "AppearanceSelectors": {
+    "Common": {
+      "RelativeTo": "Panel",
+      "Scale": 1.0,
+      "OriginX": 0.5,
+      "OriginY": 0.5,
+      "PaddingX": 0,
+      "PaddingY": 0,
+      "LabelSettings": {
+        "FontScale": 1.0,
+        "OffsetX": 0,
+        "OffsetY": -45
+      },
+      "Controls": {
+        "ButtonSize": 32,
+        "SpacingX": 10,
+        "RowOffsetY": 30,
+        "ColorIconOffsetX": 20,
+        "ModalOffsetX": 20,
+        "ModalOffsetY": 0
+      },
+      "Wheel": {
+        "Scale": 5.0,
+        "OffsetX": 0,
+        "OffsetY": 0,
+        "BorderWidth": 1,
+        "BorderColor": "255,255,255",
+        "Handle": {
+          "Size": 14,
+          "BorderColor": "0,0,0",
+          "BorderWidth": 1
+        }
+      },
+      "Bar": {
+        "Width": 16,
+        "OffsetX": 0,
+        "OffsetY": 0,
+        "Radius": 10,
+        "BorderWidth": 1,
+        "BorderColor": "255,255,255",
+        "Handle": {
+          "Size": 20,
+          "BorderColor": "0,0,0",
+          "BorderWidth": 1
+        }
+      }
+    },
+    "Hair": {
+      "Label": "charactercreation.hair",
+      "X": 0.16,
+      "Y": 0.18
+    },
+    "Shirt": {
+      "Label": "charactercreation.shirt",
+      "X": 0.16,
+      "Y": 0.34
+    },
+    "Pants": {
+      "Label": "charactercreation.pants",
+      "X": 0.16,
+      "Y": 0.50
+    }
+  },
+  "IdentitySelectors": {
+    "Common": {
+      "RelativeTo": "Panel",
+      "Scale": 1.0,
+      "OriginX": 0.0,
+      "OriginY": 0.5,
+      "LabelSettings": {
+        "FontScale": 0.9,
+        "OffsetX": 0,
+        "OffsetY": -25
+      }
+    },
+    "Input1": {
+      "Label": "charactercreation.name",
+      "X": 0.44,
+      "Y": 0.2,
+      "Width": 200,
+      "Height": 44
+    },
+    "Input2": {
+      "Label": "charactercreation.farmname",
+      "X": 0.44,
+      "Y": 0.36,
+      "Width": 200,
+      "Height": 44
+    },
+    "Select1": {
+      "Label": "charactercreation.advantages",
+      "X": 0.44,
+      "Y": 0.52,
+      "Width": 200,
+      "Height": 44,
+      "Options": [
+        "charactercreation.advantage.normal",
+        "charactercreation.advantage.farmer",
+        "charactercreation.advantage.tamer",
+        "charactercreation.advantage.cooker",
+        "charactercreation.advantage.strenger",
+        "charactercreation.advantage.woodcutter",
+        "charactercreation.advantage.fisher",
+        "charactercreation.advantage.communicator",
+        "charactercreation.advantage.gatherers"
+      ],
+      "DescriptionSettings": {
+        "IconX": 25,
+        "IconY": 25,
+        "IconScale": 0.8,
+        "TitleX": 90,
+        "TitleY": 35,
+        "TitleScale": 1.1,
+        "ContentX": 25,
+        "ContentY": 100,
+        "ContentScale": 0.8,
+        "FrameWidth": 350,
+        "FrameHeight": 250
+      }
+    }
+  },
+  "Buttons": {
+    "Ok": {
+      "RelativeTo": "Panel",
+      "X": 0.8026,
+      "Y": 0.9863,
+      "OriginX": 1.0,
+      "OriginY": 1.0,
+      "PaddingX": -15,
+      "PaddingY": -10
+    },
+    "Back": {
+      "RelativeTo": "",
+      "X": 0.0,
+      "Y": 0.0,
+      "OriginX": 0.0,
+      "OriginY": 0.0,
+      "PaddingX": 15,
+      "PaddingY": 10
+    }
+  },
+  "FarmTypeSelector": {
+    "RelativeTo": "Panel",
+    "X": 0.85,
+    "Y": 0.1,
+    "Scale": 0.7,
+    "OriginX": 0.5,
+    "OriginY": 0.0,
+    "PaddingX": 0,
+    "PaddingY": 0,
+    "Title": "charactercreation.farmtype.title",
+    "Grid": {
+      "Columns": 2,
+      "SpacingX": 20,
+      "SpacingY": 20,
+      "ItemSize": 128
+    },
+    "Options": [
+      {
+        "Key": "basic",
+        "TypeName": "charactercreation.farmtype.basic",
+        "Description": "charactercreation.farmtype.basic.desc",
+        "Texture": "Graphics/Screens/CharacterCreation/FarmTypes/type-farm-0-x4"
+      },
+      {
+        "Key": "river",
+        "TypeName": "charactercreation.farmtype.river",
+        "Description": "charactercreation.farmtype.river.desc",
+        "Texture": "Graphics/Screens/CharacterCreation/FarmTypes/type-farm-1-x4"
+      }
+    ],
+    "LabelSettings": {
+      "FontScale": 1.2,
+      "OffsetX": 0,
+      "OffsetY": 0
+    },
+    "DescriptionSettings": {
+      "IconX": 25,
+      "IconY": 25,
+      "IconScale": 0.8,
+      "TitleX": 90,
+      "TitleY": 35,
+      "TitleScale": 1.1,
+      "ContentX": 25,
+      "ContentY": 100,
+      "ContentScale": 1.0,
+      "FrameWidth": 350,
+      "FrameHeight": 250
+    }
+  },
+  "DatePicker": {
+    "Label": "charactercreation.birthday",
+    "RelativeTo": "Panel",
+    "X": 0.12,
+    "Y": 0.76,
+    "Width": 260,
+    "Height": 44,
+    "OriginX": 0,
+    "OriginY": 0,
+    "SeasonSelector": {
+      "Width": 100,
+      "OffsetX": 100,
+      "IconOffsetX": 0,
+      "IconOffsetY": 0,
+      "IconScale": 0.7,
+      "IconPadding": 4,
+      "ArrowOffsetX": -4,
+      "ArrowOffsetY": 120,
+      "ArrowScale": 0.4
+    },
+    "DaySelector": {
+      "Width": 80,
+      "OffsetX": 220,
+      "IconOffsetX": 0,
+      "IconOffsetY": 0,
+      "IconScale": 0.7,
+      "IconPadding": 4,
+      "ArrowOffsetX": -4,
+      "ArrowOffsetY": 0,
+      "ArrowScale": 0.4
+    },
+    "LabelSettings": {
+      "FontScale": 1.0,
+      "OffsetX": 0,
+      "OffsetY": 0
+    }
+  }
+}
